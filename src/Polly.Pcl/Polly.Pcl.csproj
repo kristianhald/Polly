@@ -101,6 +101,7 @@
     <Compile Include="..\Polly.Net45\Context.cs">
       <Link>Context.cs</Link>
     </Compile>
+    <Compile Include="CircuitBreaker\FrequencyCircuitBreakerState.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="..\Polly.Net45\CircuitBreaker\CircuitBreakerPolicyAsync.cs">
       <Link>CircuitBreaker\CircuitBreakerPolicyAsync.cs</Link>

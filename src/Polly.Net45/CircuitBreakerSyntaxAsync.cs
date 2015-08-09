@@ -33,5 +33,31 @@ namespace Polly
             var policyState = new CircuitBreakerState(exceptionsAllowedBeforeBreaking, durationOfBreak);
             return new Policy(action => CircuitBreakerPolicy.ImplementationAsync(action, policyBuilder.ExceptionPredicates, policyState));
         }
+
+
+        /// <summary>
+        /// <para> Builds a <see cref="Policy" /> that will function like a Circuit Breaker.</para>
+        /// <para>The circuit will break if <paramref name="exceptionsAllowedBeforeBreaking" />
+        /// exceptions that are handled by this policy are raised within a period of duration <paramref name="durationOfExceptionRelevance"/>. The circuit will stay
+        /// broken for the <paramref name="durationOfBreak" />. Any attempt to execute this policy
+        /// while the circuit is broken, will immediately throw a <see cref="BrokenCircuitException" /> containing the exception that broke the cicuit.
+        /// </para>
+        /// <para>After the break duration, the circuit closes again.  Subsequent calls continue to break the circuit if the original threshold if crossed: if more than <paramref name="exceptionsAllowedBeforeBreaking" /> exceptions occur within a period <paramref name="durationOfExceptionRelevance"/>.
+        /// </para>
+        /// </summary>
+        /// <param name="policyBuilder">The policy builder.</param>
+        /// <param name="durationOfExceptionRelevance">The timespan within which the given number of exceptions must occur to break the circuit.</param>
+        /// <param name="exceptionsAllowedBeforeBreaking">The number of exceptions that are allowed, within the given period, before opening the circuit.</param>
+        /// <param name="durationOfBreak">The duration the circuit will stay open before resetting.</param>
+        /// <returns>The policy instance.</returns>
+        /// <exception cref="System.ArgumentOutOfRangeException">exceptionsAllowedBeforeBreaking;Value must be greater than zero.</exception>
+        /// <remarks>(see "Release It!" by Michael T. Nygard fi)</remarks>
+        public static Policy CircuitBreaker(this PolicyBuilder policyBuilder, TimeSpan durationOfExceptionRelevance, int exceptionsAllowedBeforeBreaking, TimeSpan durationOfBreak)
+        {
+            if (exceptionsAllowedBeforeBreaking <= 0) throw new ArgumentOutOfRangeException("exceptionsAllowedBeforeBreaking", "Value must be greater than zero.");
+
+            var policyState = new FrequencyCircuitBreakerState(durationOfExceptionRelevance, exceptionsAllowedBeforeBreaking, durationOfBreak);
+            return new Policy(action => CircuitBreakerPolicy.ImplementationAsync(action, policyBuilder.ExceptionPredicates, policyState));
+        }
     }
 }

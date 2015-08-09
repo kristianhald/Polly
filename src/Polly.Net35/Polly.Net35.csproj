@@ -58,6 +58,7 @@
     <Compile Include="CircuitBreakerSyntax.cs" />
     <Compile Include="CircuitBreaker\CircuitBreakerPolicy.cs" />
     <Compile Include="CircuitBreaker\CircuitBreakerState.cs" />
+    <Compile Include="CircuitBreaker\FrequencyCircuitBreakerState.cs" />
     <Compile Include="CircuitBreaker\ICircuitBreakerState.cs" />
     <Compile Include="CircuitBreaker\BrokenCircuitException.cs" />
     <Compile Include="Context.cs" />
