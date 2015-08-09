@@ -56,6 +56,9 @@
     <Compile Include="..\polly.net35\circuitbreaker\CircuitBreakerState.cs">
       <Link>CircuitBreaker\CircuitBreakerState.cs</Link>
     </Compile>
+    <Compile Include="..\Polly.Net35\CircuitBreaker\FrequencyCircuitBreakerState.cs" >
+      <Link>CircuitBreaker\FrequencyCircuitBreakerState.cs</Link>
+    </Compile>
     <Compile Include="..\polly.net35\circuitbreaker\ICircuitBreakerState.cs">
       <Link>CircuitBreaker\ICircuitBreakerState.cs</Link>
     </Compile>
