@@ -89,7 +89,7 @@ namespace Polly.CircuitBreaker
                     _averageTicksBetweenExceptions = (
                         (_averageTicksBetweenExceptions * (_count - 2))
                         + (SystemClock.UtcNow().Ticks - _ticksLastException))
-                        / (_count - 1);
+                        / (_count - 1); // Sketch - calculation may want to be checked/revised/re-ordered considering avoiding breaking bounds, rounding, performance.
                 }
 
                 _ticksLastException = SystemClock.UtcNow().Ticks;
