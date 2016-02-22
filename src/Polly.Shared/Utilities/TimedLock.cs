@@ -15,7 +15,7 @@ namespace Polly.Utilities
     {
         public static TimedLock Lock(object o)
         {
-            return Lock(o, TimeSpan.FromSeconds(5));
+            return Lock(o, TimeSpan.FromSeconds(30));
         }
 
         public static TimedLock Lock(object o, TimeSpan timeout)
