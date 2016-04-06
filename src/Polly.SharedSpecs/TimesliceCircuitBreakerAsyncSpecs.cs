@@ -1038,10 +1038,9 @@ namespace Polly.Specs
         public void Should_call_onhalfopen_when_automatically_transitioning_to_halfopen_due_to_state_read()
         {
             int onBreakCalled = 0;
-            int onResetCalled = 0;
             int onHalfOpenCalled = 0;
             Action<Exception, TimeSpan> onBreak = (_, __) => { onBreakCalled++; };
-            Action onReset = () => { onResetCalled++; };
+            Action onReset = () => { };
             Action onHalfOpen = () => { onHalfOpenCalled++; };
 
             var time = 1.January(2000);
