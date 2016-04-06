@@ -407,6 +407,56 @@ namespace Polly.Specs
         }
 
         [Fact]
+        public void Should_open_circuit_with_the_last_raised_exception_if_failure_threshold_equalled_and_throughput_threshold_equalled_even_if_time_is_just_outside_duration()
+        {
+            var time = 1.January(2000);
+            SystemClock.UtcNow = () => time;
+
+            var timesliceDuration = TimeSpan.FromSeconds(10);
+
+            CircuitBreakerPolicy breaker = Policy
+                .Handle<DivideByZeroException>()
+                .TimesliceCircuitBreaker(
+                    failureThreshold: 0.5,
+                    timesliceDuration: timesliceDuration,
+                    minimumThroughput: 4,
+                    durationOfBreak: TimeSpan.FromSeconds(30)
+                );
+
+            // Four of four actions in this test throw handled failures.
+            breaker.Invoking(x => x.RaiseException<DivideByZeroException>())
+                .ShouldThrow<DivideByZeroException>();
+            breaker.CircuitState.Should().Be(CircuitState.Closed);
+
+            SystemClock.UtcNow = () => time.AddTicks(timesliceDuration.Ticks / 2);
+
+            breaker.Invoking(x => x.RaiseException<DivideByZeroException>())
+                .ShouldThrow<DivideByZeroException>();
+            breaker.CircuitState.Should().Be(CircuitState.Closed);
+
+            breaker.Invoking(x => x.RaiseException<DivideByZeroException>())
+                .ShouldThrow<DivideByZeroException>();
+            breaker.CircuitState.Should().Be(CircuitState.Closed);
+
+            // Adjust SystemClock so that timeslice doesn't quite expire; fourth exception thrown in same timeslice.
+            SystemClock.UtcNow = () => time.AddTicks(timesliceDuration.Ticks + 1);
+
+            breaker.Invoking(x => x.RaiseException<DivideByZeroException>())
+                .ShouldThrow<DivideByZeroException>();
+            breaker.CircuitState.Should().Be(CircuitState.Closed);
+
+            breaker.Invoking(x => x.RaiseException<DivideByZeroException>())
+                .ShouldThrow<DivideByZeroException>();
+            breaker.CircuitState.Should().Be(CircuitState.Open);
+
+            breaker.Invoking(x => x.RaiseException<DivideByZeroException>())
+                .ShouldThrow<BrokenCircuitException>()
+                .WithMessage("The circuit is now open and is not allowing calls.")
+                .WithInnerException<DivideByZeroException>();
+            breaker.CircuitState.Should().Be(CircuitState.Open);
+        }
+
+        [Fact]
         public void Should_not_open_circuit_if_failure_threshold_not_met_and_throughput_threshold_not_met()
         {
             var time = 1.January(2000);
